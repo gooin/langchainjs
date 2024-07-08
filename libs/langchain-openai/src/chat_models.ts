@@ -358,11 +358,11 @@ export class ChatOpenAI<
     };
   }
 
-  temperature = 1;
+  temperature = 0.8;
 
-  topP = 1;
+  topP = 0.7;
 
-  frequencyPenalty = 0;
+  frequencyPenalty = 1;
 
   presencePenalty = 0;
 
@@ -437,6 +437,10 @@ export class ChatOpenAI<
       fields?.azureOpenAIApiKey ??
       getEnvironmentVariable("AZURE_OPENAI_API_KEY");
 
+    this.model =
+      fields?.model ??
+      getEnvironmentVariable("OPENAI_MODEL") ?? '';
+
     this.azureADTokenProvider = fields?.azureADTokenProvider ?? undefined;
 
     if (!this.azureOpenAIApiKey && !this.apiKey && !this.azureADTokenProvider) {
@@ -465,7 +469,7 @@ export class ChatOpenAI<
       fields?.configuration?.organization ??
       getEnvironmentVariable("OPENAI_ORGANIZATION");
 
-    this.modelName = fields?.model ?? fields?.modelName ?? this.model;
+    this.modelName = fields?.model ?? fields?.modelName ??  getEnvironmentVariable("OPENAI_MODEL") ?? this.model ;
     this.model = this.modelName;
     this.modelKwargs = fields?.modelKwargs ?? {};
     this.timeout = fields?.timeout;
@@ -504,7 +508,7 @@ export class ChatOpenAI<
     this.clientConfig = {
       apiKey: this.apiKey,
       organization: this.organization,
-      baseURL: configuration?.basePath ?? fields?.configuration?.basePath,
+      baseURL: configuration?.basePath ?? fields?.configuration?.basePath ?? getEnvironmentVariable("OPENAI_BASE_URL"),
       dangerouslyAllowBrowser: true,
       defaultHeaders:
         configuration?.baseOptions?.headers ??
@@ -512,7 +516,7 @@ export class ChatOpenAI<
       defaultQuery:
         configuration?.baseOptions?.params ??
         fields?.configuration?.baseOptions?.params,
-      ...configuration,
+      ...configuration,    
       ...fields?.configuration,
     };
   }
